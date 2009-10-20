@@ -6,6 +6,8 @@ set -e
 eclipse=/opt/eclipse
 # Directory that should contain the mirrors for each site
 repo=/Users/martin/p2/update
+# Name of the composite mirror site (XML escaped)
+name="Eclipse Update Site Mirrors"
 
 default_sites=( \
   subclipse-1.6  http://subclipse.tigris.org/update_1.6.x/ \
@@ -81,7 +83,7 @@ function composite() {
   cat <<EOF > $file
 <?xml version='1.0' encoding='UTF-8'?>
 <?compositeMetadataRepository version='1.0.0'?>
-<repository name='&quot;Eclipse Project Test Site&quot;'
+<repository name='$name'
     type='org.eclipse.equinox.internal.p2.metadata.repository.CompositeMetadataRepository' version='1.0.0'>
   <properties size='1'>
     <property name='p2.timestamp' value='$time'/>
@@ -96,7 +98,7 @@ EOF
   cat <<EOF > $file
 <?xml version='1.0' encoding='UTF-8'?>
 <?compositeArtifactRepository version='1.0.0'?>
-<repository name='&quot;Eclipse Project Test Site&quot;'
+<repository name='$name'
     type='org.eclipse.equinox.internal.p2.artifact.repository.CompositeArtifactRepository' version='1.0.0'>
   <properties size='1'>
     <property name='p2.timestamp' value='$time'/>
