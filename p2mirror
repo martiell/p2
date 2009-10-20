@@ -9,11 +9,13 @@ repo=/Users/martin/p2/update
 # Name of the composite mirror site (XML escaped)
 name="Eclipse Update Site Mirrors"
 
+# TestNG update site meta-data seems to have issues
+# testng         http://beust.com/eclipse/ \
+
 default_sites=( \
   subclipse-1.6  http://subclipse.tigris.org/update_1.6.x/ \
   mylyn-extras   http://download.eclipse.org/tools/mylyn/update/extras/ \
   m2eclipse-dev  http://m2eclipse.sonatype.org/update-dev/ \
-  testng         http://beust.com/eclipse/ \
   jgit           http://www.jgit.org/updates/ \
   findbugs       http://findbugs.cs.umd.edu/eclipse/ \
   eclipsefp      http://eclipsefp.sf.net/updates/ \
