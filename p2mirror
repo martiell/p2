@@ -1,0 +1,116 @@
+#!/bin/bash
+set -u
+set -e
+
+# Directory containing eclipse binary
+eclipse=/opt/eclipse
+# Directory that should contain the mirrors for each site
+repo=/Users/martin/p2/update
+
+default_sites=( \
+  subclipse-1.6  http://subclipse.tigris.org/update_1.6.x/ \
+  mylyn-extras   http://download.eclipse.org/tools/mylyn/update/extras/ \
+  m2eclipse-dev  http://m2eclipse.sonatype.org/update-dev/ \
+  testng         http://beust.com/eclipse/ \
+  jgit           http://www.jgit.org/updates/ \
+  findbugs       http://findbugs.cs.umd.edu/eclipse/ \
+  eclipsefp      http://eclipsefp.sf.net/updates/ \
+  groovy         http://dist.codehaus.org/groovy/distributions/greclipse/snapshot/e3.5/ \
+  byecycle       http://wuestefeld.name/svn/byecycle/trunk/updatesite/ \
+  scala          http://www.scala-lang.org/scala-eclipse-plugin/ \
+  ucdetector     http://ucdetector.sourceforge.net/update/ \
+  hudson         http://hudson-eclipse.googlecode.com/svn/trunk/hudson-update/ \
+  jbosstools     http://download.jboss.org/jbosstools/updates/stable/ \
+)
+
+dev_sites=( \
+  jbosstools-dev http://download.jboss.org/jbosstools/updates/development/ \
+  scala-nightly  http://www.scala-lang.org/scala-eclipse-plugin-nightly/ \
+)
+
+mirror_site() {
+  for type in artifact metadata; do
+    $eclipse/eclipse \
+      -application org.eclipse.equinox.p2.$type.repository.mirrorApplication \
+      -nosplash \
+      -source $2 \
+      -destination file://$repo/$1 \
+      -destinationName "$1 mirror" \
+      -verbose \
+      -compare
+  done
+  echo
+}
+
+mirror() {
+  numSites=$(( ${#sites[*]} / 2 ))
+  for (( i = 0; i < $numSites; i++ )) ; do
+    alias=${sites[i*2]}
+    url=${sites[i*2+1]}
+    echo "Mirroring $alias (Step $((i+1)) of $numSites)"
+    mirror_site $alias $url
+  done
+}
+
+timeMillisJava() {
+  D=`mktemp -d /tmp/p2mirror.XXXX`
+  echo 'class Time{public static void main(String[] s){System.out.println(System.currentTimeMillis());}}' > $D/Time.java
+  javac -d $D $D/Time.java
+  java -cp $D Time
+  rm $D/Time.{java,class}
+  rmdir $D
+}
+
+timeMillis() {
+  if test -n "$(which gawk)" ; then
+    gawk 'BEGIN {print systime() * 1000; exit;}'
+  else
+    timeMillisJava
+  fi
+}
+
+function composite() {
+  time=$(timeMillis)
+  numSites=$(( ${#sites[*]} / 2 ))
+  file=update/compositeContent.xml
+  xml=""
+  for (( i = 0; i < $numSites; i++ )) ; do
+    xml="$xml<child location='${sites[i*2]}'/>"
+  done
+
+  cat <<EOF > $file
+<?xml version='1.0' encoding='UTF-8'?>
+<?compositeMetadataRepository version='1.0.0'?>
+<repository name='&quot;Eclipse Project Test Site&quot;'
+    type='org.eclipse.equinox.internal.p2.metadata.repository.CompositeMetadataRepository' version='1.0.0'>
+  <properties size='1'>
+    <property name='p2.timestamp' value='$time'/>
+  </properties>
+  <children size='$numSites'>
+    $xml
+  </children>
+</repository>
+EOF
+
+  file=update/compositeArtifacts.xml
+  cat <<EOF > $file
+<?xml version='1.0' encoding='UTF-8'?>
+<?compositeArtifactRepository version='1.0.0'?>
+<repository name='&quot;Eclipse Project Test Site&quot;'
+    type='org.eclipse.equinox.internal.p2.artifact.repository.CompositeArtifactRepository' version='1.0.0'>
+  <properties size='1'>
+    <property name='p2.timestamp' value='$time'/>
+  </properties>
+  <children size='$numSites'>
+    $xml
+  </children>
+</repository>
+EOF
+}
+
+
+sites=(${default_sites[*]} ${dev_sites[*]})
+mirror 2>&1 | tee mirror.log
+
+sites=(${default_sites[*]})
+composite
