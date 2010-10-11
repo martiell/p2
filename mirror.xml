@@ -1,0 +1,60 @@
+<project name="P2 Mirror" default="mirror">
+  <property name="p2.root" value="${user.dir}/update"/>
+  <target name="mirror">
+    <p2.mirror source="http://m2eclipse.sonatype.org/sites/m2e/0.10.2.20100623-1649/"
+               destination="${p2.root}/m2e"/>
+    <p2.mirror source="http://m2eclipse.sonatype.org/sites/m2e-extras"
+               destination="${p2.root}/m2e-extras"/>
+    <p2.mirror source="http://repository.sonatype.org/content/repositories/forge-sites/m2eclipse-tycho/0.4.3/N/0.4.3.201010041831/"
+               destination="${p2.root}/tycho"/>
+    <p2.mirror source="http://www.jgit.org/updates/"
+               destination="${p2.root}/jgit"/>
+    <p2.mirror source="http://findbugs.cs.umd.edu/eclipse/"
+               destination="${p2.root}/findbugs"/>
+    <p2.mirror source="http://eclipse-cs.sf.net/update/"
+               destination="${p2.root}/checkstyle"/>
+    <p2.mirror source="http://hudson-eclipse.googlecode.com/svn/trunk/hudson-update/"
+               destination="${p2.root}/hudson"/>
+    <p2.mirror source="http://ucdetector.sourceforge.net/update/"
+               destination="${p2.root}/ucdetector"/>
+    <p2.mirror source="http://download.eclipse.org/tools/mylyn/update/e3.4/"
+	       destination="${p2.root}/mylyn-extras">
+      <iu id="org.eclipse.mylyn.trac_feature.feature.group"/>
+      <iu id="org.eclipse.mylyn.bugzilla_feature.feature.group"/>
+    </p2.mirror>
+    <p2.mirror source="http://download.scala-ide.org/nightly-update-helios-2.8.0.final"
+	       destination="${p2.root}/scala"/>
+    <p2.mirror source="http://download.eclipse.org/tools/gef/updates/releases/" destination="${p2.root}/gef">
+      <iu id="org.eclipse.gef.feature.group" version="3.5.2.v20100111-1352-777928194B66D5D476C33B2A"/>
+      <iu id="org.eclipse.zest.feature.group" version="1.1.2.v20100111-1352-6618yD6DH8G6N59OM53B2A"/>
+      <slicingOptions followStrict="true" />
+    </p2.mirror>
+    <p2.mirror
+       source="http://beust.com/eclipse/"
+       destination="${p2.root}/testng"
+       ignoreErrors="true"
+       log="/dev/null">
+      <slicingOptions latestVersionOnly="true"/>
+    </p2.mirror>
+<!-- eclipsefp      http://eclipsefp.sourceforge.net/updates/site.xml -->
+
+    <p2.composite.repository>
+      <repository location="${p2.root}" name="M2Eclipse and extras"/>
+      <add>
+	<repository location="m2e"/>
+	<repository location="m2e-extras"/>
+	<repository location="tycho"/>
+	<repository location="jgit"/>
+	<repository location="findbugs"/>
+	<repository location="checkstyle"/>
+	<repository location="hudson"/>
+	<repository location="ucdetector"/>
+	<repository location="mylyn-extras"/>
+	<repository location="scala"/>
+	<repository location="gef"/>
+	<repository location="scala"/>
+	<repository location="testng"/>
+      </add>
+    </p2.composite.repository>
+  </target>
+</project>
