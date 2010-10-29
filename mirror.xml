@@ -17,6 +17,8 @@
                destination="${p2.root}/hudson"/>
     <p2.mirror source="http://ucdetector.sourceforge.net/update/"
                destination="${p2.root}/ucdetector"/>
+    <p2.mirror source="http://bndtools-updates.s3.amazonaws.com"
+               destination="${p2.root}/bndtools"/>
     <p2.mirror source="http://download.eclipse.org/tools/mylyn/update/e3.4/"
 	       destination="${p2.root}/mylyn-extras">
       <iu id="org.eclipse.mylyn.trac_feature.feature.group"/>
@@ -39,8 +41,9 @@
 <!-- eclipsefp      http://eclipsefp.sourceforge.net/updates/site.xml -->
 
     <p2.composite.repository>
-      <repository location="${p2.root}" name="M2Eclipse and extras"/>
+      <repository location="${p2.root}" name="Eclipse plugin mirror"/>
       <add>
+	<repository location="bndtools"/>
 	<repository location="m2e"/>
 	<repository location="m2e-extras"/>
 	<repository location="tycho"/>
